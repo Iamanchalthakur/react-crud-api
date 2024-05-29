@@ -90,7 +90,7 @@ export default class TutorialsList extends Component {
   }
 
   render() {
-    const { searchTitle, tutorials, currentTutorial, currentIndex } = this.state;
+    const { searchTitle, tutorials, currentTutorial } = this.state;
 
     return (
       <div className="list row">
@@ -118,19 +118,25 @@ export default class TutorialsList extends Component {
           <h4>Tutorials List</h4>
 
           <ul className="list-group">
-            {tutorials &&
-              tutorials.map((tutorial, index) => (
-                <li
-                  className={
-                    "list-group-item " +
-                    (index === currentIndex ? "active" : "")
-                  }
-                  onClick={() => this.setActiveTutorial(tutorial, index)}
-                  key={index}
-                >
-                  {tutorial.title}
+
+
+            {tutorials && tutorials.map((data, index) => (
+                
+                
+                
+                <li>
+                  {data.First_name}
+                  {data.Last_name}
+                  {data.age}
+                  {data.email}
                 </li>
+
+
+
               ))}
+
+
+
           </ul>
 
           <button
