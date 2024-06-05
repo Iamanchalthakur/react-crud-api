@@ -1,231 +1,199 @@
-import React, { Component } from "react";
-import UserDataService from "../services/user.service"
+import React, { useState } from "react";
+import UserDataService from '../services/user.service';
 import { Label, Input, Button, Col } from "reactstrap";
 
+const UserData = () => {
+  const [formState, setFormState] = useState({
+    firstname: "",
+    lastName: "",
+    email: "",
+    age: "",
+    phoneNo: "",
+    roleId: "",
+  });
 
-export default class UserData extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      firstname: "",
-      lastName: "",
-      email: "",
-      age: "",
-      phoneNo: "",
-      roleId: "",
-      submitClicked: false,
-      searches: "",
-      items: [],
-      errors: {
-        firstNameError: "",
-        lastNameError: "",
-        ageError: "",
-        emailError: "",
-        phoneNoError: "",
-        roleIdError: ""
-      }
-    };
-  }
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [items, setItems] = useState([]);
+  const [errors, setErrors] = useState({
+    firstNameError: "",
+    lastNameError: "",
+    ageError: "",
+    emailError: "",
+    phoneNoError: "",
+    roleIdError: ""
+  });
 
-  onChangeFirstName = (e) => {
-    this.setState({
-      firstname: e.target.value,
-      errors: {...this.state.errors, firstNameError: "" }
-    });
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+    setErrors((prevState) => ({
+      ...prevState,
+      [`${name}Error`]: "",
+    }));
   };
 
-  onChangeLastName = (e) => {
-    this.setState({
-      lastName: e.target.value,
-      errors: { ...this.state.errors, lastNameError: "" }
-    });
-  };
-
-  onChangeEmail = (e) => {
-    this.setState({
-      email: e.target.value,
-      errors: { ...this.state.errors, emailError: "" }
-    });
-  };
-
-  onChangeAge = (e) => {
-    this.setState({
-      age: e.target.value,
-      errors: { ...this.state.errors, ageError: "" }
-    });
-  };
-
-  onChangePhoneNo = (e) => {
-    this.setState({
-      phoneNo: e.target.value,
-      errors: { ...this.state.errors, phoneNoError: "" }
-    });
-  };
-
-  onChangeRoleId = (e) => {
-    this.setState({
-      roleId: e.target.value,
-      errors: { ...this.state.errors, roleIdError: "" }
-    });
-  };
-
-  onClickButton = () => {
-    let errors = this.state.errors;
+  const onClickButton = () => {
     if (
-      this.state.firstname &&
-      this.state.lastName &&
-      this.state.email &&
-      this.state.age &&
-      this.state.phoneNo &&
-      this.state.roleId
+      formState.firstname &&
+      formState.lastName &&
+      formState.email &&
+      formState.age &&
+      formState.phoneNo &&
+      formState.roleId
     ) {
       let user = {
-        firstname: this.state.firstname,
-        lastName: this.state.lastName,
-        email: this.state.email,
-        age: this.state.age,
-        phoneNo: this.state.phoneNo,
-        roleId: this.state.roleId
+        firstname: formState.firstname,
+        lastName: formState.lastName,
+        email: formState.email,
+        age: formState.age,
+        phoneNo: formState.phoneNo,
+        roleId: formState.roleId
       };
 
       // API call to create user
       UserDataService.create(user)
         .then(response => {
           console.log(response.data);
-          this.setState((prevState) => ({
-            submitClicked: true,
-            items: [...prevState.items, user],
+          setSubmitClicked(true);
+          setItems((prevItems) => [...prevItems, user]);
+          setFormState({
             firstname: "",
             lastName: "",
             email: "",
             age: "",
             phoneNo: "",
             roleId: "",
-            errors: {
-              firstNameError: "",
-              lastNameError: "",
-              ageError: "",
-              emailError: "",
-              phoneNoError: "",
-              roleIdError: ""
-            }
-          }));
+          });
+          setErrors({
+            firstNameError: "",
+            lastNameError: "",
+            ageError: "",
+            emailError: "",
+            phoneNoError: "",
+            roleIdError: ""
+          });
         })
         .catch(e => {
           console.log(e);
         });
     } else {
-      this.setState({
-        errors: {
-          firstNameError: !this.state.firstname ? "Enter Name" : "",
-          lastNameError: !this.state.lastName ? "Enter Last Name" : "",
-          emailError: !this.state.email ? "Enter E-mail" : "",
-          ageError: !this.state.age ? "Enter Age" : "",
-          phoneNoError: !this.state.phoneNo ? "Enter Phone No" : "",
-          roleIdError: !this.state.roleId ? "Enter Role Id" : ""
-        }
+      setErrors({
+        firstNameError: !formState.firstname ? "Enter Name" : "",
+        lastNameError: !formState.lastName ? "Enter Last Name" : "",
+        emailError: !formState.email ? "Enter E-mail" : "",
+        ageError: !formState.age ? "Enter Age" : "",
+        phoneNoError: !formState.phoneNo ? "Enter Phone No" : "",
+        roleIdError: !formState.roleId ? "Enter Role Id" : ""
       });
     }
   };
 
-  render() {
+  return (
+    <div className="body">
+      <div className="home">
+        <div className="form">
+          <Label className="title">First Name</Label>
+          <Input
+            type="text"
+            maxLength="10"
+            name="firstname"
+            onChange={onChange}
+            value={formState.firstname}
+          />
+          <p className="text-danger">
+            {!formState.firstname ? errors.firstNameError : ""}
+          </p>
 
-    return (
-      <div className="body">
-        <div className="home">
-          <div className="form">
-            <Label className="title">First Name</Label>
-            <Input
-              type="text"
-              maxLength="10"
-              onChange={this.onChangeFirstName}
-              value={this.state.firstname}
-            />
-            <p className="text-danger">
-              {!this.state.firstname ? this.state.errors.firstNameError : ""}
-            </p>
+          <Label className="title">Last Name</Label>
+          <Input
+            type="text"
+            name="lastName"
+            onChange={onChange}
+            value={formState.lastName}
+          />
+          <p className="text-danger">
+            {!formState.lastName ? errors.lastNameError : ""}
+          </p>
 
-            <Label className="title">Last Name</Label>
-            <Input
-              type="text"
-              onChange={this.onChangeLastName}
-              value={this.state.lastName}
-            />
-            <p className="text-danger">
-              {!this.state.lastName ? this.state.errors.lastNameError : ""}
-            </p>
+          <Label className="title">Email</Label>
+          <Input
+            type="email"
+            name="email"
+            onChange={onChange}
+            value={formState.email}
+          />
+          <p className="text-danger">
+            {!formState.email ? errors.emailError : ""}
+          </p>
 
-            <Label className="title">Email</Label>
-            <Input
-              type="email"
-              onChange={this.onChangeEmail}
-              value={this.state.email}
-            />
-            <p className="text-danger">
-              {!this.state.email ? this.state.errors.emailError : ""}
-            </p>
+          <Label className="title">Age</Label>
+          <Input
+            type="number"
+            name="age"
+            onChange={onChange}
+            value={formState.age}
+          />
+          <p className="text-danger">
+            {!formState.age ? errors.ageError : ""}
+          </p>
 
-            <Label className="title">Age</Label>
-            <Input
-              type="number"
-              onChange={this.onChangeAge}
-              value={this.state.age}
-            />
-            <p className="text-danger">
-              {!this.state.age ? this.state.errors.ageError : ""}
-            </p>
+          <Label className="title">Phone No</Label>
+          <Input
+            type="number"
+            name="phoneNo"
+            onChange={onChange}
+            value={formState.phoneNo}
+          />
+          <p className="text-danger">
+            {!formState.phoneNo ? errors.phoneNoError : ""}
+          </p>
 
-            <Label className="title">Phone No</Label>
-            <Input
-              type="number"
-              onChange={this.onChangePhoneNo}
-              value={this.state.phoneNo}
-            />
-            <p className="text-danger">
-              {!this.state.phoneNo ? this.state.errors.phoneNoError : ""}
-            </p>
+          <Label className="title">Role Id</Label>
+          <Input
+            type="number"
+            name="roleId"
+            onChange={onChange}
+            value={formState.roleId}
+          />
+          <p className="text-danger">
+            {!formState.roleId ? errors.roleIdError : ""}
+          </p>
 
-            <Label className="title">Role Id</Label>
-            <Input
-              type="number"
-              onChange={this.onChangeRoleId}
-              value={this.state.roleId}
-            />
-            <p className="text-danger">
-              {!this.state.roleId ? this.state.errors.roleIdError : ""}
-            </p>
-
-            <Button style={{ color: "blue" }} onClick={this.onClickButton}>
-              SUBMIT
-            </Button>
-          </div>
-        </div>
-
-        <div>
-          {this.state.items.map((item, index) => (
-            <Col className="Col" item xs={5} key={index}>
-              <p>
-                <span>Name: {item.firstname}</span>
-              </p>
-              <p>
-                <span>Last Name: {item.lastName}</span>
-              </p>
-              <p>
-                <span>Email: {item.email}</span>
-              </p>
-              <p>
-                <span>Age: {item.age}</span>
-              </p>
-              <p>
-                <span>Phone No: {item.phoneNo}</span>
-              </p>
-              <p>
-                <span>Role Id: {item.roleId}</span>
-              </p>
-            </Col>
-          ))}
+          <Button style={{ color: "blue" }} onClick={onClickButton}>
+            SUBMIT
+          </Button>
         </div>
       </div>
-    );
-  }
-}
+
+      <div>
+        {items.map((item, index) => (
+          <Col className="Col" item xs={5} key={index}>
+            <p>
+              <span>Name: {item.firstname}</span>
+            </p>
+            <p>
+              <span>Last Name: {item.lastName}</span>
+            </p>
+            <p>
+              <span>Email: {item.email}</span>
+            </p>
+            <p>
+              <span>Age: {item.age}</span>
+            </p>
+            <p>
+              <span>Phone No: {item.phoneNo}</span>
+            </p>
+            <p>
+              <span>Role Id: {item.roleId}</span>
+            </p>
+          </Col>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UserData;

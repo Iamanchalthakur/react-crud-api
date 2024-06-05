@@ -9,6 +9,15 @@ class UserDataService {
     return http.post("/users", data);
   }
 
+  login(data) {
+    return http.post("/login", data);
+  }
+
+  update(data){
+    return http.put("/users", data);
+  }
+  
+
 }
 
 export default new UserDataService();
