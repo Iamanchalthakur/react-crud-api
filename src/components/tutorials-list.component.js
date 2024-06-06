@@ -7,7 +7,7 @@ const TutorialsList = () => {
   const [currentTutorial, setCurrentTutorial] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [searchTitle, setSearchTitle] = useState("");
-  const [user, setUser] = useState(null); // Add user state
+  const [user, setUser] = useState(null); 
 
   useEffect(() => {
     retrieveTutorials();
